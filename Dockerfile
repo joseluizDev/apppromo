@@ -1,19 +1,20 @@
-FROM node:18-alpine AS dependencies
-WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm install --legacy-peer-deps
+# Use a imagem oficial do Node.js como base
+FROM node:16
 
-FROM node:18-alpine AS builder
+# Crie e defina o diretório de trabalho no container
 WORKDIR /app
+
+# Copie os arquivos package.json e package-lock.json para o diretório de trabalho
+COPY package*.json ./
+
+# Instale as dependências
+RUN npm install
+
+# Copie o restante do código para o container
 COPY . .
-COPY --from=dependencies /app/node_modules ./node_modules
-RUN npm run build
 
-FROM node:18-alpine AS production
-WORKDIR /app
-ENV NODE_ENV production
-COPY --from=builder /app/build ./build
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./
-EXPOSE 3000
-CMD ["npx", "serve", "-s", "build"]
+# na porta 3000 e 80
+EXPOSE 3000 80
+
+# Defina o comando para rodar a aplicação
+CMD ["node", "index.js"]
