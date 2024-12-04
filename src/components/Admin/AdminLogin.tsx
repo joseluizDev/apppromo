@@ -2,7 +2,7 @@ import { Lock } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export function AdminLogin() {
+export function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
