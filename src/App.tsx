@@ -10,7 +10,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-            <Route path="/" element={
+            <Route path="/admin" element={
           <div className="min-h-screen bg-gray-50">
             <AdminLogin />
             <PromoBanner />
