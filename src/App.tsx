@@ -10,7 +10,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        
         <Route path="/" element={
           <div className="min-h-screen bg-gray-50">
             <Banner />
@@ -20,13 +19,9 @@ function App() {
             </main>
           </div>
         } />
-         <Route path="/login" element={
+        <Route path="/login" element={
           <div className="min-h-screen bg-gray-50">
             <Login />
-            <PromoBanner />
-            <main className="container mx-auto px-4 py-6">
-              <ProductSlider />
-            </main>
           </div>
         } />
         <Route path="/admin" element={<AdminDashboard />} />
