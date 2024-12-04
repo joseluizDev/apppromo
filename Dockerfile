@@ -1,5 +1,5 @@
 # Estágio de build
-FROM node:18-alpine as build
+FROM node:18-alpine AS build
 
 # Define o diretório de trabalho
 WORKDIR /app
@@ -14,7 +14,7 @@ RUN npm install
 
 # Copia o código fonte
 COPY src/ ./src/
-COPY public/ ./public/
+COPY public ./public
 
 # Gera o build da aplicação
 RUN npm run build
