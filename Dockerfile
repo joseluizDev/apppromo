@@ -7,6 +7,7 @@ WORKDIR /app
 # Copiar os arquivos de dependências
 COPY package.json package-lock.json ./
 # Caso esteja usando o yarn, use 'yarn.lock' ao invés de 'package-lock.json'
+RUN npm ci --only=production
 
 # Instalar dependências
 RUN npm install  # Ou 'yarn install' se estiver usando o Yarn

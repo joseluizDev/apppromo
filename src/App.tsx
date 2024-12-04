@@ -1,29 +1,29 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { AdminDashboard } from './components/Admin/AdminDashboard';
 import { Login } from './components/Admin/AdminLogin';
-import { Banner } from './components/Banner/Banner';
+import { Home } from './components/Home/Home';
 import NotFound from './components/NotFound/NotFound';
-import { ProductSlider } from './components/ProductSlider/ProductSlider';
-import { PromoBanner } from './components/PromoBanner/PromoBanner';
 
 function App() {
   return (
     <BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Routes>
-        <Route path="/" element={
-          <div className="min-h-screen bg-gray-50">
-            <Banner />
-            <PromoBanner />
-            <main className="container mx-auto px-4 py-6">
-              <ProductSlider />
-            </main>
-          </div>
-        } />
-        <Route path="/login" element={
-          <div className="min-h-screen bg-gray-50">
-            <Login />
-          </div>
-        } />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
