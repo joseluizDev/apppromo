@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expor porta
-EXPOSE 5173
+EXPOSE 80
 
 # Comando para iniciar a aplicação
 CMD ["npm", "run", "dev"] 
