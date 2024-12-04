@@ -10,6 +10,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/admin" element={<AdminLogin />} />
         <Route path="/" element={
           <div className="min-h-screen bg-gray-50">
             <Banner />
@@ -19,7 +20,6 @@ function App() {
             </main>
           </div>
         } />
-        <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
