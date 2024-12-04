@@ -10,18 +10,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-            <Route path="/admin" element={
+        
+        <Route path="/" element={
           <div className="min-h-screen bg-gray-50">
-            <AdminLogin />
+            <Banner />
             <PromoBanner />
             <main className="container mx-auto px-4 py-6">
               <ProductSlider />
             </main>
           </div>
         } />
-        <Route path="/" element={
+            <Route path="/admin" element={
           <div className="min-h-screen bg-gray-50">
-            <Banner />
+            <AdminLogin />
             <PromoBanner />
             <main className="container mx-auto px-4 py-6">
               <ProductSlider />
