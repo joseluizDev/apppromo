@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const promos = [
   {
@@ -22,8 +21,7 @@ export function PromoBanner() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % promos.length);
-    }, 5000); // Auto-slide every 5 seconds
-
+    }, 5000); 
     return () => clearInterval(timer);
   }, []);
 
@@ -53,11 +51,6 @@ export function PromoBanner() {
           </div>
         ))}
       </div>
-
-  
-
-     
-
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
         {promos.map((_, index) => (
           <button
