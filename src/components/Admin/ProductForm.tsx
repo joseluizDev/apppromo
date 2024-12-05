@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const productSchema = z.object({
-  title: z.string().min(1, 'Título é obrigatório'),
-  description: z.string().min(1, 'Descrição é obrigatória'),
-  price: z.string().min(1, 'Preço é obrigatório'),
-  discountPrice: z.string().optional(),
-  quantity: z.string().min(1, 'Quantidade é obrigatória'),
+  titulo: z.string().min(1, 'Título é obrigatório'),
+  descricao: z.string().min(1, 'Descrição é obrigatória'),
+  preco: z.string().min(1, 'Preço é obrigatório'),
+  precoPromocional: z.string().optional(),
+  quantidade: z.string().min(1, 'Quantidade é obrigatória'),
   images: z.instanceof(FileList).optional().or(z.string()),
 });
 
@@ -26,9 +26,9 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
     resolver: zodResolver(productSchema),
     defaultValues: initialData ? {
       ...initialData,
-      price: initialData.price.toString(),
-      discountPrice: initialData.discountPrice?.toString() || '',
-      quantity: initialData.quantity.toString(),
+      preco: initialData.preco.toString(),
+      precoPromocional: initialData.precoPromocional?.toString() || '',
+      quantidade: initialData.quantidade.toString(),
     } : undefined,
   });
 
@@ -50,18 +50,17 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
 
   const onSubmit = async (data: ProductFormData) => {
     const formData = new FormData();
-    formData.append('title', data.title);
-    formData.append('description', data.description);
-    formData.append('price', data.price);
-    if (data.discountPrice) formData.append('discountPrice', data.discountPrice);
-    formData.append('quantity', data.quantity);
-    
+    formData.append('titulo', data.titulo);
+    formData.append('descricao', data.descricao);
+    formData.append('preco', data.preco);
+    if (data.precoPromocional) formData.append('precoPromocional', data.precoPromocional);
+    formData.append('quantidade', data.quantidade);
     if (data.images instanceof FileList) {
-      Array.from(data.images).forEach((file, index) => {
-        formData.append('images', file);
-      });
+      for (let i = 0; i < data.images.length; i++) {
+        formData.append('images', data.images[i]); 
+      }
     }
-
+    
     onSave(formData);
   };
 
@@ -83,11 +82,11 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
             Título
           </label>
           <input
-            {...register('title')}
+            {...register('titulo')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
-          {errors.title && (
-            <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+          {errors.titulo && (
+            <p className="text-red-500 text-sm mt-1">{errors.titulo.message}</p>
           )}
         </div>
 
@@ -96,12 +95,12 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
             Descrição
           </label>
           <textarea
-            {...register('description')}
+            {...register('descricao')}
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
-          {errors.description && (
-            <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+          {errors.descricao && (
+            <p className="text-red-500 text-sm mt-1">{errors.descricao.message}</p>
           )}
         </div>
 
@@ -111,13 +110,13 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
               Preço
             </label>
             <input
-              {...register('price')}
+              {...register('preco')}
               type="number"
               step="0.01"
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
             />
-            {errors.price && (
-              <p className="text-red-500 text-sm mt-1">{errors.price.message}</p>
+            {errors.preco && (
+              <p className="text-red-500 text-sm mt-1">{errors.preco.message}</p>
             )}
           </div>
 
@@ -126,7 +125,7 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
               Preço com Desconto (Opcional)
             </label>
             <input
-              {...register('discountPrice')}
+              {...register('precoPromocional')}
               type="number"
               step="0.01"
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -139,12 +138,12 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
             Quantidade
           </label>
           <input
-            {...register('quantity')}
+            {...register('quantidade')}
             type="number"
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           />
-          {errors.quantity && (
-            <p className="text-red-500 text-sm mt-1">{errors.quantity.message}</p>
+          {errors.quantidade && (
+            <p className="text-red-500 text-sm mt-1">{errors.quantidade.message}</p>
           )}
         </div>
 

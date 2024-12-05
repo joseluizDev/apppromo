@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Drawer } from '../Drawer';
 import { ProductForm } from './ProductForm';
+import ProdutoService from '../../services/produtoService';
 
 export function AdminDashboard() {
   const navigate = useNavigate();
@@ -41,11 +42,15 @@ export function AdminDashboard() {
     setShowForm(true);
   };
 
-  const handleSave = (product: any) => {
+  const handleSave = async (product: any) => {
     if (editingProduct) {
       setProducts(products.map(p => p.id === editingProduct.id ? { ...product, id: editingProduct.id } : p));
     } else {
-      setProducts([...products, { ...product, id: Date.now() }]);
+      const produtoService = new ProdutoService();
+      const produto = await produtoService.cadastrarProduto(product);
+      console.log(produto);
+
+
     }
     setShowForm(false);
     setEditingProduct(null);

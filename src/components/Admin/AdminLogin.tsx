@@ -1,13 +1,28 @@
 import { Lock } from 'lucide-react';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import LoginService from '../../services/loginService';
 
 export function Login() {
   const navigate = useNavigate();
+  const email = useRef<HTMLInputElement | null>(null);
+  const senha = useRef<HTMLInputElement | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent)  => {
     e.preventDefault();
-    navigate('/admin/dashboard');
+    
+    if(!email.current?.value || !senha.current?.value){
+      return toast.error('Preencha todos os campos!');
+    }
+
+    const loginService = new LoginService();
+    const login = await loginService.login(email.current.value, senha.current.value);
+    if(!login){
+      return toast.error('Email ou senha inválidos!');
+    }
+
+    navigate('/admin');
   };
 
   return (
@@ -26,12 +41,13 @@ export function Login() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Usuário
+              Email
             </label>
             <input
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-              type="text"
-              placeholder="Digite seu usuário"
+              type="email"
+              placeholder="Digite seu email"
+              ref={email}
             />
           </div>
           
@@ -43,6 +59,7 @@ export function Login() {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
               type="password"
               placeholder="Digite sua senha"
+              ref={senha}
             />
           </div>
           
