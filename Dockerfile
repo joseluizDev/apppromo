@@ -1,5 +1,5 @@
 # Etapa 1: Construção do projeto
-FROM node:16 AS build
+FROM node:18 AS build
 
 # Diretório de trabalho dentro do container
 WORKDIR /app
