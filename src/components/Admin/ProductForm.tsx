@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { uploadToMinIO } from '../../services/minio/storage';
 
 const productSchema = z.object({
   titulo: z.string().min(1, 'Título é obrigatório'),
@@ -9,7 +10,7 @@ const productSchema = z.object({
   preco: z.string().min(1, 'Preço é obrigatório'),
   precoPromocional: z.string().optional(),
   quantidade: z.string().min(1, 'Quantidade é obrigatória'),
-  images: z.instanceof(FileList).optional().or(z.string()),
+  images: z.instanceof(FileList).optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -22,6 +23,7 @@ interface ProductFormProps {
 
 export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps) {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const imagens = useRef<HTMLInputElement>(null);
   const { register, handleSubmit, formState: { errors } } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: initialData ? {
@@ -40,6 +42,7 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
     }
   };
 
+
   const removeImage = (indexToRemove: number) => {
     setSelectedImages(prev => {
       const newImages = prev.filter((_, index) => index !== indexToRemove);
@@ -53,16 +56,22 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
     formData.append('titulo', data.titulo);
     formData.append('descricao', data.descricao);
     formData.append('preco', data.preco);
-    if (data.precoPromocional) formData.append('precoPromocional', data.precoPromocional);
-    formData.append('quantidade', data.quantidade);
-    if (data.images instanceof FileList) {
-      for (let i = 0; i < data.images.length; i++) {
-        formData.append('images', data.images[i]); 
-      }
+    if (data.precoPromocional) {
+      formData.append('precoPromocional', data.precoPromocional);
     }
-    
+    formData.append('quantidade', data.quantidade);
+
+    if (imagens.current?.files) {
+      for (let i = 0; i < imagens.current.files.length; i++) {
+        await uploadToMinIO('apppromo', imagens.current.files[i].name, imagens.current.files[i]);
+        formData.append('images', imagens.current.files[i]);
+      }
+
+    }
+
     onSave(formData);
   };
+
 
   useEffect(() => {
     return () => {
@@ -75,7 +84,7 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
       <h2 className="text-lg font-medium mb-6">
         {initialData ? 'Editar Produto' : 'Adicionar Novo Produto'}
       </h2>
-      
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -151,11 +160,11 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Imagens do Produto
           </label>
-          
+
           <div className="mt-2 flex gap-4 overflow-x-auto pb-4">
             {selectedImages.map((imageUrl, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="relative flex-shrink-0 w-32 h-32 rounded-lg overflow-hidden border border-gray-200"
               >
                 <img
@@ -168,30 +177,30 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
                   onClick={() => removeImage(index)}
                   className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                 >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    className="h-4 w-4" 
-                    viewBox="0 0 20 20" 
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    viewBox="0 0 20 20"
                     fill="currentColor"
                   >
-                    <path 
-                      fillRule="evenodd" 
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
-                      clipRule="evenodd" 
+                    <path
+                      fillRule="evenodd"
+                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      clipRule="evenodd"
                     />
                   </svg>
                 </button>
               </div>
             ))}
 
-            <label 
+            <label
               className="flex-shrink-0 w-32 h-32 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-purple-500 transition-colors"
             >
               <input
                 type="file"
                 multiple
                 accept="image/*"
-                {...register('images')}
+                ref={imagens}
                 onChange={handleImageChange}
                 className="hidden"
               />
@@ -216,7 +225,7 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
               </div>
             </label>
           </div>
-          
+
           {errors.images && (
             <p className="text-red-500 text-sm mt-1">{errors.images.message}</p>
           )}

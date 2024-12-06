@@ -1,6 +1,6 @@
 import Cookie from 'js-cookie';
 
-const baseUrl = 'http://localhost:5210/api/';
+const baseUrl = "http://localhost:5210/api/";
 const auth = Cookie.get('token');
 
 const HttpClient = {

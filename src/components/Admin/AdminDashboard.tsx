@@ -48,9 +48,6 @@ export function AdminDashboard() {
     } else {
       const produtoService = new ProdutoService();
       const produto = await produtoService.cadastrarProduto(product);
-      console.log(produto);
-
-
     }
     setShowForm(false);
     setEditingProduct(null);

@@ -1,82 +1,127 @@
 {
-  "hash": "8f46c04b",
+  "hash": "2e438000",
   "configHash": "aa7c0157",
-  "lockfileHash": "90e8351b",
-  "browserHash": "2ef7cfbb",
+  "lockfileHash": "02d3c21f",
+  "browserHash": "2924fac4",
   "optimized": {
     "react": {
       "src": "../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "cf36e882",
+      "fileHash": "e3e04c6f",
       "needsInterop": true
     },
     "react/jsx-dev-runtime": {
       "src": "../../node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "b5b85308",
+      "fileHash": "d538d138",
       "needsInterop": true
     },
     "react/jsx-runtime": {
       "src": "../../node_modules/react/jsx-runtime.js",
       "file": "react_jsx-runtime.js",
-      "fileHash": "9b8ad2ef",
+      "fileHash": "9cb300ff",
       "needsInterop": true
+    },
+    "@aws-sdk/client-s3": {
+      "src": "../../node_modules/@aws-sdk/client-s3/dist-es/index.js",
+      "file": "@aws-sdk_client-s3.js",
+      "fileHash": "ef284035",
+      "needsInterop": false
     },
     "@hookform/resolvers/zod": {
       "src": "../../node_modules/@hookform/resolvers/zod/dist/zod.mjs",
       "file": "@hookform_resolvers_zod.js",
-      "fileHash": "228d630f",
-      "needsInterop": false
-    },
-    "react-dom/client": {
-      "src": "../../node_modules/react-dom/client.js",
-      "file": "react-dom_client.js",
-      "fileHash": "b4ae3d5d",
-      "needsInterop": true
-    },
-    "react-hook-form": {
-      "src": "../../node_modules/react-hook-form/dist/index.esm.mjs",
-      "file": "react-hook-form.js",
-      "fileHash": "12fa0910",
-      "needsInterop": false
-    },
-    "react-router-dom": {
-      "src": "../../node_modules/react-router-dom/dist/index.js",
-      "file": "react-router-dom.js",
-      "fileHash": "c4577812",
-      "needsInterop": false
-    },
-    "react-toastify": {
-      "src": "../../node_modules/react-toastify/dist/react-toastify.esm.mjs",
-      "file": "react-toastify.js",
-      "fileHash": "2ff066bb",
-      "needsInterop": false
-    },
-    "zod": {
-      "src": "../../node_modules/zod/lib/index.mjs",
-      "file": "zod.js",
-      "fileHash": "86edccf3",
+      "fileHash": "f47f1eac",
       "needsInterop": false
     },
     "js-cookie": {
       "src": "../../node_modules/js-cookie/dist/js.cookie.mjs",
       "file": "js-cookie.js",
-      "fileHash": "6db945d1",
+      "fileHash": "b78a5049",
       "needsInterop": false
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "775c2135",
+      "needsInterop": true
+    },
+    "react-hook-form": {
+      "src": "../../node_modules/react-hook-form/dist/index.esm.mjs",
+      "file": "react-hook-form.js",
+      "fileHash": "9fe75af2",
+      "needsInterop": false
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "a87f4732",
+      "needsInterop": false
+    },
+    "react-toastify": {
+      "src": "../../node_modules/react-toastify/dist/react-toastify.esm.mjs",
+      "file": "react-toastify.js",
+      "fileHash": "2e7e074e",
+      "needsInterop": false
+    },
+    "uuid": {
+      "src": "../../node_modules/uuid/dist/esm-browser/index.js",
+      "file": "uuid.js",
+      "fileHash": "885fdd4c",
+      "needsInterop": false
+    },
+    "zod": {
+      "src": "../../node_modules/zod/lib/index.mjs",
+      "file": "zod.js",
+      "fileHash": "a40a9c46",
+      "needsInterop": false
+    },
+    "firebase/storage": {
+      "src": "../../node_modules/firebase/storage/dist/esm/index.esm.js",
+      "file": "firebase_storage.js",
+      "fileHash": "2b3a5ba6",
+      "needsInterop": false
+    },
+    "firebase/app": {
+      "src": "../../node_modules/firebase/app/dist/esm/index.esm.js",
+      "file": "firebase_app.js",
+      "fileHash": "d8d73848",
+      "needsInterop": false
+    },
+    "minio": {
+      "src": "../../node_modules/minio/dist/esm/minio.mjs",
+      "file": "minio.js",
+      "fileHash": "295e6ffd",
+      "needsInterop": false
+    },
+    "aws-sdk": {
+      "src": "../../node_modules/aws-sdk/lib/browser.js",
+      "file": "aws-sdk.js",
+      "fileHash": "ad06720f",
+      "needsInterop": true
     }
   },
   "chunks": {
-    "chunk-HCGKX5ED": {
-      "file": "chunk-HCGKX5ED.js"
+    "chunk-O36KSKZT": {
+      "file": "chunk-O36KSKZT.js"
     },
-    "chunk-LPS6FCVJ": {
-      "file": "chunk-LPS6FCVJ.js"
+    "chunk-HXFPVD3I": {
+      "file": "chunk-HXFPVD3I.js"
     },
-    "chunk-WNPTCGAH": {
-      "file": "chunk-WNPTCGAH.js"
+    "chunk-TUX7A2JK": {
+      "file": "chunk-TUX7A2JK.js"
     },
-    "chunk-5WRI5ZAA": {
-      "file": "chunk-5WRI5ZAA.js"
+    "chunk-VRLFRZ6S": {
+      "file": "chunk-VRLFRZ6S.js"
+    },
+    "chunk-6ZEBFQ3D": {
+      "file": "chunk-6ZEBFQ3D.js"
+    },
+    "chunk-4SFRHSJ3": {
+      "file": "chunk-4SFRHSJ3.js"
+    },
+    "chunk-EQCVQC35": {
+      "file": "chunk-EQCVQC35.js"
     }
   }
 }
