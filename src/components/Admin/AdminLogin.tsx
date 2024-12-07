@@ -3,11 +3,13 @@ import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import LoginService from '../../services/loginService';
+import { useUserContext } from '../../context/context';
 
 export function Login() {
   const navigate = useNavigate();
   const email = useRef<HTMLInputElement | null>(null);
   const senha = useRef<HTMLInputElement | null>(null);
+  const { setUser } = useUserContext();
 
   const handleSubmit = async (e: React.FormEvent)  => {
     e.preventDefault();
@@ -21,6 +23,8 @@ export function Login() {
     if(!login){
       return toast.error('Email ou senha inválidos!');
     }
+    setUser(login);
+    localStorage.setItem('usuario', JSON.stringify(login));
 
     navigate('/admin');
   };

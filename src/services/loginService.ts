@@ -13,7 +13,7 @@ export default class LoginService {
             const dados = await response.json();
             Cookie.set('token', dados.token);
 
-            return dados;
+            return dados.usuario;
         } catch (error) {
             console.error("Erro no login", error);
             return false;

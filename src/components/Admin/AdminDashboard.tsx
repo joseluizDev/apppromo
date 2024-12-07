@@ -1,30 +1,42 @@
 import { LogOut, Pencil, Plus, ShoppingBag, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Drawer } from '../Drawer';
 import { ProductForm } from './ProductForm';
 import ProdutoService from '../../services/produtoService';
+import { toast } from 'react-toastify';
+import AdminService from '../../services/adminService';
+
+type Product = {
+  id: number;
+  titulo: string;
+  descricao: string;
+  preco: number;
+  precoPromocional: number;
+  quantidade: number;
+  imagens: Array<{ url: string }>;
+}[];
 
 export function AdminDashboard() {
   const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      images: [
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
-        "https://images.unsplash.com/photo-1542496658-e33a6d0d50f6",
-      ],
-      title: "Relógio Smart Premium",
-      description: "Material: Aço inoxidável, Cor: Prata, Resistente à água",
-      quantity: 15,
-      price: 899.90,
-      discountPrice: 699.90
-    },
-    // Add more products as needed
-  ]);
+  const [products, setProducts] = useState<Product>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const loadProducts = async () => {
+    const produtoService = new AdminService();
+    const produtos = await produtoService.listarProdutos();
+    if (!produtos) {
+      return toast.error('Erro ao carregar produtos!');
+    }
+
+    setProducts(produtos);
+  };
+
+  useEffect(() => {    
+    loadProducts();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
@@ -44,10 +56,15 @@ export function AdminDashboard() {
 
   const handleSave = async (product: any) => {
     if (editingProduct) {
-      setProducts(products.map(p => p.id === editingProduct.id ? { ...product, id: editingProduct.id } : p));
+      // setProducts(products.map(p => p.id === editingProduct.id ? { ...product, id: editingProduct.id } : p));
     } else {
       const produtoService = new ProdutoService();
       const produto = await produtoService.cadastrarProduto(product);
+      if (!produto) {
+        return toast.error('Erro ao cadastrar produto!');
+      }
+      loadProducts();
+      toast.success('Produto cadastrado com sucesso!');
     }
     setShowForm(false);
     setEditingProduct(null);
@@ -131,16 +148,16 @@ export function AdminDashboard() {
                           <div className="h-14 w-14 flex-shrink-0">
                             <img
                               className="h-14 w-14 rounded-lg object-cover shadow-sm"
-                              src={product.images[0]}
-                              alt={product.title}
+                              src={product.imagens[0].url}
+                              alt={product.titulo}
                             />
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                              {product.title}
+                              {product.titulo}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {product.description.substring(0, 60)}...
+                              {product.descricao.substring(0, 60)}...
                             </div>
                           </div>
                         </div>
@@ -150,23 +167,23 @@ export function AdminDashboard() {
                           {new Intl.NumberFormat('pt-BR', {
                             style: 'currency',
                             currency: 'BRL'
-                          }).format(product.price)}
+                          }).format(product.preco)}
                         </div>
-                        {product.discountPrice && (
+                        {product.precoPromocional > 0 && (
                           <div className="text-xs text-green-600 font-medium">
                             Promoção: {new Intl.NumberFormat('pt-BR', {
                               style: 'currency',
                               currency: 'BRL'
-                            }).format(product.discountPrice)}
+                            }).format(product.precoPromocional)}
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                          ${product.quantity > 10 ? 'bg-green-100 text-green-800' : 
-                            product.quantity > 0 ? 'bg-yellow-100 text-yellow-800' : 
+                          ${product.quantidade > 10 ? 'bg-green-100 text-green-800' : 
+                            product.quantidade > 0 ? 'bg-yellow-100 text-yellow-800' : 
                             'bg-red-100 text-red-800'}`}>
-                          {product.quantity} unidades
+                          {product.quantidade} unidades
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

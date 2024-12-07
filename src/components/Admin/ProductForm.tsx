@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { uploadToMinIO } from '../../services/minio/storage';
+import { useUserContext } from '../../context/context';
 
 const productSchema = z.object({
   titulo: z.string().min(1, 'Título é obrigatório'),
@@ -10,7 +10,7 @@ const productSchema = z.object({
   preco: z.string().min(1, 'Preço é obrigatório'),
   precoPromocional: z.string().optional(),
   quantidade: z.string().min(1, 'Quantidade é obrigatória'),
-  images: z.instanceof(FileList).optional(),
+  imagens: z.instanceof(FileList).optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -24,6 +24,7 @@ interface ProductFormProps {
 export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps) {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const imagens = useRef<HTMLInputElement>(null);
+  const { user } = useUserContext();
   const { register, handleSubmit, formState: { errors } } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: initialData ? {
@@ -63,11 +64,10 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
 
     if (imagens.current?.files) {
       for (let i = 0; i < imagens.current.files.length; i++) {
-        await uploadToMinIO('apppromo', imagens.current.files[i].name, imagens.current.files[i]);
-        formData.append('images', imagens.current.files[i]);
+        formData.append('imagens', imagens.current.files[i]);
       }
-
     }
+    formData.append('UsuarioId', user.id);
 
     onSave(formData);
   };
@@ -226,8 +226,8 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
             </label>
           </div>
 
-          {errors.images && (
-            <p className="text-red-500 text-sm mt-1">{errors.images.message}</p>
+          {errors.imagens && (
+            <p className="text-red-500 text-sm mt-1">{errors.imagens.message}</p>
           )}
         </div>
 
