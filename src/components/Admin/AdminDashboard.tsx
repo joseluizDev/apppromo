@@ -1,4 +1,4 @@
-import { LogOut, Pencil, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { LogOut, Pencil, Plus, ShoppingBag, Trash2, ShoppingBagIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Drawer } from '../Drawer';
@@ -6,6 +6,7 @@ import { ProductForm } from './ProductForm';
 import ProdutoService from '../../services/produtoService';
 import { toast } from 'react-toastify';
 import AdminService from '../../services/adminService';
+import Loading from '../Loading';
 
 type Product = {
   id: number;
@@ -23,8 +24,10 @@ export function AdminDashboard() {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [products, setProducts] = useState<Product>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const loadProducts = async () => {
+    setLoading(true);
     const produtoService = new AdminService();
     const produtos = await produtoService.listarProdutos();
     if (!produtos) {
@@ -32,9 +35,10 @@ export function AdminDashboard() {
     }
 
     setProducts(produtos);
+    setLoading(false);
   };
 
-  useEffect(() => {    
+  useEffect(() => {
     loadProducts();
   }, []);
 
@@ -43,9 +47,15 @@ export function AdminDashboard() {
     navigate('/admin');
   };
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      setProducts(products.filter(product => product.id !== id));
+  const handleDelete = async (id: number) => {
+    if (window.confirm('Deseja realmente excluir este produto?')) {
+      const produtoService = new ProdutoService();
+      const remover = await produtoService.deletarProduto(id);
+      if (!remover) {
+        return toast.error('Erro ao excluir produto!');
+      }
+      loadProducts();
+      toast.success('Produto excluído com sucesso!');
     }
   };
 
@@ -68,7 +78,7 @@ export function AdminDashboard() {
     }
     setShowForm(false);
     setEditingProduct(null);
-  };  
+  };
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -81,6 +91,13 @@ export function AdminDashboard() {
           <div className="flex justify-between items-center py-6">
             <h1 className="text-2xl font-bold text-gray-800">Gerenciamento de Produtos</h1>
             <div className="flex gap-4">
+              <button
+                onClick={() => navigate('/')}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 bg-gray-100 px-4 py-2 rounded-lg transition-all duration-300"
+              >
+                <ShoppingBagIcon className="h-5 w-5" />
+                Inicio
+              </button>
               <button
                 onClick={toggleDrawer}
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-900 bg-gray-100 px-4 py-2 rounded-lg transition-all duration-300"
@@ -122,94 +139,118 @@ export function AdminDashboard() {
               </button>
             </div>
 
-            <div className="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-100">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Produto
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Preço
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Quantidade
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {products.map((product) => (
-                    <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="h-14 w-14 flex-shrink-0">
-                            <img
-                              className="h-14 w-14 rounded-lg object-cover shadow-sm"
-                              src={product.imagens[0].url}
-                              alt={product.titulo}
-                            />
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {product.titulo}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {product.descricao.substring(0, 60)}...
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {new Intl.NumberFormat('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL'
-                          }).format(product.preco)}
-                        </div>
-                        {product.precoPromocional > 0 && (
-                          <div className="text-xs text-green-600 font-medium">
-                            Promoção: {new Intl.NumberFormat('pt-BR', {
-                              style: 'currency',
-                              currency: 'BRL'
-                            }).format(product.precoPromocional)}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                          ${product.quantidade > 10 ? 'bg-green-100 text-green-800' : 
-                            product.quantidade > 0 ? 'bg-yellow-100 text-yellow-800' : 
-                            'bg-red-100 text-red-800'}`}>
-                          {product.quantidade} unidades
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => handleEdit(product)}
-                          className="text-indigo-600 hover:text-indigo-900 mr-4 p-2 hover:bg-indigo-50 rounded-lg transition-all"
-                          title="Editar produto"
-                        >
-                          <Pencil className="h-5 w-5" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(product.id)}
-                          className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-all"
-                          title="Excluir produto"
-                        >
-                          <Trash2 className="h-5 w-5" />
-                        </button>
-                      </td>
+            {loading ? (
+              <Loading />
+            ) : (
+              <div className="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-100">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Produto
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Preço
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Quantidade
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Ações
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {products.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={4}
+                          className="px-6 py-4 text-sm text-gray-600 text-center"
+                        >
+                          Nenhum produto cadastrado.
+                        </td>
+                      </tr>
+                    ) : (
+                      products.map((product) => (
+                        <tr
+                          key={product.id}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="h-14 w-14 flex-shrink-0">
+                                <img
+                                  className="h-14 w-14 rounded-lg object-cover shadow-sm"
+                                  src={product.imagens[0].url}
+                                  alt={product.titulo}
+                                />
+                              </div>
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {product.titulo}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {product.descricao.substring(0, 60)}...
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                              }).format(product.preco)}
+                            </div>
+                            {product.precoPromocional > 0 && (
+                              <div className="text-xs text-green-600 font-medium">
+                                Promoção:{' '}
+                                {new Intl.NumberFormat('pt-BR', {
+                                  style: 'currency',
+                                  currency: 'BRL',
+                                }).format(product.precoPromocional)}
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${product.quantidade > 10
+                                ? 'bg-green-100 text-green-800'
+                                : product.quantidade > 0
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-red-100 text-red-800'
+                                }`}
+                            >
+                              {product.quantidade} unidades
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button
+                              onClick={() => handleEdit(product)}
+                              className="text-indigo-600 hover:text-indigo-900 mr-4 p-2 hover:bg-indigo-50 rounded-lg transition-all"
+                              title="Editar produto"
+                            >
+                              <Pencil className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(product.id)}
+                              className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-all"
+                              title="Excluir produto"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </>
         )}
       </main>
+
 
       <Drawer isOpen={isDrawerOpen} onClose={toggleDrawer}>
         <div className="p-4">

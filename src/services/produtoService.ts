@@ -13,4 +13,17 @@ export default class ProdutoService {
             return false;
         }
     }
+
+    async deletarProduto(id: number){
+        try {
+            const response = await HttpClient.delete(`Produto/remover/$${id}`, true);
+            if (response.status !== 200) {
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error("Erro no deletar", error);
+            return false;
+        }
+    }
 }

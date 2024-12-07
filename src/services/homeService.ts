@@ -1,7 +1,7 @@
 import HttpClient from "../http/httpClient";
 
-export default class AdminService {
-    async listarProdutos(){
+export default class HomeService {
+    async listarProdutos() {
         try {
             const response = await HttpClient.get('Produto/listar', true);
 
@@ -16,6 +16,4 @@ export default class AdminService {
             return false;
         }
     }
-
-    
 }
