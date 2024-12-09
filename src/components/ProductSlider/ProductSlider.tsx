@@ -58,21 +58,21 @@ export function ProductSlider({ products }: ProductSliderProps) {
       </div>
 
       {/* Slides */}
-      <div className="overflow-hidden">
+      <div className="overflow-hidden p-2">
         <div
           className="flex transition-transform duration-300 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {products.map((product) => (
             <div key={product.id} className="w-full flex-shrink-0">
-              <ProductCard product={product} />
+              <ProductCard product={product} isAcao={true} />
             </div>
           ))}
         </div>
       </div>
 
       {/* Indicadores */}
-      <div className="flex justify-center gap-2 mt-4">
+      <div className="flex justify-center gap-2  mt-4">
         {products.map((_, index) => (
           <button
             key={index}

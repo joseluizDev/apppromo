@@ -19,4 +19,8 @@ export default class LoginService {
             return false;
         }
     }
+
+    async logout() {
+        Cookie.remove('token');
+    }
 }

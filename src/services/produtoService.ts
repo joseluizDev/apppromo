@@ -26,4 +26,17 @@ export default class ProdutoService {
             return false;
         }
     }
+
+    async atualizarProduto(produto: FormData) {
+        try {
+            const response = await HttpClient.putFromData('Produto/atualizar', produto, true);
+            if (response.status !== 200) {
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error("Erro ao atualizar produto", error);
+            return false;
+        }
+    }    
 }

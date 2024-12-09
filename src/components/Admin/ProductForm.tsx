@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useUserContext } from '../../context/context';
+import CategoriaService from '../../services/categoriaService';
+import { toast } from 'react-toastify';
 
 const productSchema = z.object({
   titulo: z.string().min(1, 'Título é obrigatório'),
@@ -10,6 +12,7 @@ const productSchema = z.object({
   preco: z.string().min(1, 'Preço é obrigatório'),
   precoPromocional: z.string().optional(),
   quantidade: z.string().min(1, 'Quantidade é obrigatória'),
+  CategoriaId: z.string().min(1, 'Categoria é obrigatória'),
   imagens: z.instanceof(FileList).optional(),
 });
 
@@ -21,17 +24,26 @@ interface ProductFormProps {
   onCancel: () => void;
 }
 
+type Category = {
+  id: number;
+  nome: string;
+};
+
+
 export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps) {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const imagens = useRef<HTMLInputElement>(null);
+
   const { user } = useUserContext();
-  const { register, handleSubmit, formState: { errors } } = useForm<ProductFormData>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: initialData ? {
       ...initialData,
       preco: initialData.preco.toString(),
       precoPromocional: initialData.precoPromocional?.toString() || '',
       quantidade: initialData.quantidade.toString(),
+      CategoriaId: initialData.CategoriaId,
     } : undefined,
   });
 
@@ -42,7 +54,6 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
       setSelectedImages(prev => [...prev, ...newImageUrls]);
     }
   };
-
 
   const removeImage = (indexToRemove: number) => {
     setSelectedImages(prev => {
@@ -57,6 +68,10 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
     formData.append('titulo', data.titulo);
     formData.append('descricao', data.descricao);
     formData.append('preco', data.preco);
+    formData.append('categoriaId', data.CategoriaId);
+    if (initialData) {
+      formData.append('id', initialData.id);
+    }
     if (data.precoPromocional) {
       formData.append('precoPromocional', data.precoPromocional);
     }
@@ -67,17 +82,41 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
         formData.append('imagens', imagens.current.files[i]);
       }
     }
-    formData.append('UsuarioId', user.id);
+    formData.append('usuarioId', user.id);
 
     onSave(formData);
   };
 
+  const loadCategories = async () => {
+    const homeService = new CategoriaService();
+    const categorias = await homeService.listarCategorias();
+    if (!categorias) {
+      return toast.error('Erro ao carregar categorias!');
+    }
+    setCategories(categorias);
+  }
 
   useEffect(() => {
+    loadCategories();
+
+    if (initialData) {
+      reset({
+        ...initialData,
+        preco: initialData.preco.toString(),
+        precoPromocional: initialData.precoPromocional?.toString() || '',
+        quantidade: initialData.quantidade.toString(),
+        CategoriaId: initialData.CategoriaId,
+      });
+
+      if (initialData.imagens) {
+        setSelectedImages(initialData.imagens.map((img: { url: string }) => img.url));
+      }
+    }
+
     return () => {
-      selectedImages.forEach(url => URL.revokeObjectURL(url));
+      selectedImages.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [selectedImages]);
+  }, [initialData, reset]);
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
@@ -93,6 +132,7 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
           <input
             {...register('titulo')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            defaultValue={initialData?.titulo}
           />
           {errors.titulo && (
             <p className="text-red-500 text-sm mt-1">{errors.titulo.message}</p>
@@ -107,6 +147,7 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
             {...register('descricao')}
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            defaultValue={initialData?.descricao}
           />
           {errors.descricao && (
             <p className="text-red-500 text-sm mt-1">{errors.descricao.message}</p>
@@ -123,6 +164,7 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
               type="number"
               step="0.01"
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              defaultValue={initialData?.preco}
             />
             {errors.preco && (
               <p className="text-red-500 text-sm mt-1">{errors.preco.message}</p>
@@ -131,29 +173,52 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Preço com Desconto (Opcional)
+              {initialData ? 'Preço Promocional' : 'Preço Promocional (opcional)'}
             </label>
             <input
               {...register('precoPromocional')}
               type="number"
               step="0.01"
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              defaultValue={initialData?.precoPromocional}
             />
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Quantidade
-          </label>
-          <input
-            {...register('quantidade')}
-            type="number"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          />
-          {errors.quantidade && (
-            <p className="text-red-500 text-sm mt-1">{errors.quantidade.message}</p>
-          )}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Quantidade
+            </label>
+            <input
+              {...register('quantidade')}
+              type="number"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              defaultValue={initialData?.quantidade}
+            />
+            {errors.quantidade && (
+              <p className="text-red-500 text-sm mt-1">{errors.quantidade.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Categoria
+            </label>
+            <select {...register('CategoriaId')} id="categoria" className='w-75 px-3 py-2 border border-gray-300 w-full rounded-md'>
+              <option value="">Selecione uma categoria</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id} >
+                  {category.nome}
+                </option>
+              ))}
+            </select>
+            {
+              errors.CategoriaId && (
+                <p className="text-red-500 text-sm mt-1">{errors.CategoriaId.message}</p>
+              )
+            }
+          </div>
         </div>
 
         <div>
@@ -203,6 +268,7 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
                 ref={imagens}
                 onChange={handleImageChange}
                 className="hidden"
+                defaultValue={initialData?.imagens}
               />
               <div className="text-center">
                 <svg
@@ -225,10 +291,11 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
               </div>
             </label>
           </div>
-
-          {errors.imagens && (
-            <p className="text-red-500 text-sm mt-1">{errors.imagens.message}</p>
-          )}
+          {
+            errors.imagens && (
+              <p className="text-red-500 text-sm mt-1">{errors.imagens.message}</p>
+            )
+          }
         </div>
 
         <div className="flex justify-end gap-4">

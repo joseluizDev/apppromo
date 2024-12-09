@@ -1,60 +1,75 @@
 import Cookie from 'js-cookie';
 
 const baseUrl = "http://localhost:5210/api/";
-const auth = Cookie.get('token');
 
 const HttpClient = {
-    get : function (path: string, token: boolean = false){
+    get: function (path: string, token: boolean = false) {
+        const auth = Cookie.get('token'); // Obtém o token dinamicamente
         return fetch(baseUrl + path, {
             method: 'GET',
             headers: {
-                Authorization: token ? `Bearer ${auth}` : '',
+                Authorization: token && auth ? `Bearer ${auth}` : '',
                 'Content-Type': 'application/json',
             }
-        })
+        });
     },
 
-    post: function (path: string, data: object, token: boolean = false){
+    post: function (path: string, data: object, token: boolean = false) {
+        const auth = Cookie.get('token'); // Obtém o token dinamicamente
         return fetch(baseUrl + path, {
             method: 'POST',
             headers: {
-                Authorization: token ? `Bearer ${auth}` : '',
+                Authorization: token && auth ? `Bearer ${auth}` : '',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
-        })
+            body: JSON.stringify(data),
+        });
     },
 
-    postFormData: function (path: string, data: FormData, token: boolean = false){
+    postFormData: function (path: string, data: FormData, token: boolean = false) {
+        const auth = Cookie.get('token'); // Obtém o token dinamicamente
         return fetch(baseUrl + path, {
             method: 'POST',
             headers: {
-                Authorization: token ? `Bearer ${auth}` : '',
+                Authorization: token && auth ? `Bearer ${auth}` : '',
             },
-            body: data
-        })
+            body: data,
+        });
     },
 
-    put: function (path: string, data: object, token: boolean = false){
+    putFromData: function (path: string, data: FormData, token: boolean = false) {
+        const auth = Cookie.get('token'); // Obtém o token dinamicamente
         return fetch(baseUrl + path, {
             method: 'PUT',
             headers: {
-                Authorization: token ? `Bearer ${auth}` : '',
-                'Content-Type': 'application/json',
+                Authorization: token && auth ? `Bearer ${auth}` : '',
             },
-            body: JSON.stringify(data)
-        })
+            body: data,
+        });
     },
 
-    delete: function (path: string, token: boolean = false){
+    put: function (path: string, data: object, token: boolean = false) {
+        const auth = Cookie.get('token'); // Obtém o token dinamicamente
+        return fetch(baseUrl + path, {
+            method: 'PUT',
+            headers: {
+                Authorization: token && auth ? `Bearer ${auth}` : '',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+    },
+
+    delete: function (path: string, token: boolean = false) {
+        const auth = Cookie.get('token'); // Obtém o token dinamicamente
         return fetch(baseUrl + path, {
             method: 'DELETE',
             headers: {
-                Authorization: token ? `Bearer ${auth}` : '',
+                Authorization: token && auth ? `Bearer ${auth}` : '',
                 'Content-Type': 'application/json',
-            }
-        })
-    }
-}
+            },
+        });
+    },
+};
 
 export default HttpClient;

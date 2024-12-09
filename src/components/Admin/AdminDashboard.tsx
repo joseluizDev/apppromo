@@ -1,4 +1,4 @@
-import { LogOut, Pencil, Plus, ShoppingBag, Trash2, ShoppingBagIcon } from 'lucide-react';
+import { LogOut, Pencil, Plus, ShoppingBag, Trash2, HomeIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Drawer } from '../Drawer';
@@ -7,6 +7,9 @@ import ProdutoService from '../../services/produtoService';
 import { toast } from 'react-toastify';
 import AdminService from '../../services/adminService';
 import Loading from '../Loading';
+import ReservaService from '../../services/reservaService';
+import LoginService from '../../services/loginService';
+import middleware from '../../middleware';
 
 type Product = {
   id: number;
@@ -16,15 +19,32 @@ type Product = {
   precoPromocional: number;
   quantidade: number;
   imagens: Array<{ url: string }>;
-}[];
+};
+
+type Reserva = {
+  id: number;
+  nome: string;
+  email: string;
+  telefone: string;
+  instagram: string;
+  endereco: string;
+  referencia: string;
+  entrega: boolean;
+  retirada: boolean;
+  quantidade: number;
+  valorTotal: number;
+  produto: Product;
+};
 
 export function AdminDashboard() {
   const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
-  const [products, setProducts] = useState<Product>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [reservas, setReservas] = useState<Reserva[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingReserva, setLoadingReserva] = useState(false);
 
   const loadProducts = async () => {
     setLoading(true);
@@ -38,13 +58,31 @@ export function AdminDashboard() {
     setLoading(false);
   };
 
+  const loadReservas = async () => {
+    setLoadingReserva(true);
+    const produtoService = new ReservaService();
+    const reservas = await produtoService.ListarReservas();
+    if (!reservas) {
+      return toast.error('Erro ao carregar reservas!');
+    }
+
+    setReservas(reservas);
+    setLoadingReserva(false);
+  };
+
   useEffect(() => {
     loadProducts();
+    loadReservas();
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    navigate('/admin');
+    localStorage.removeItem('usuario');
+    const loginService = new LoginService();
+    const logout = loginService.logout();
+    if (!logout) {
+      return toast.error('Erro ao fazer logout!');
+    }
+    navigate('/login');
   };
 
   const handleDelete = async (id: number) => {
@@ -59,23 +97,21 @@ export function AdminDashboard() {
     }
   };
 
-  const handleEdit = (product: any) => {
-    setEditingProduct(product);
+  const handleEdit = (productId: number) => {
+    navigate(`/admin/editar/${productId}`);
     setShowForm(true);
   };
 
   const handleSave = async (product: any) => {
-    if (editingProduct) {
-      // setProducts(products.map(p => p.id === editingProduct.id ? { ...product, id: editingProduct.id } : p));
-    } else {
-      const produtoService = new ProdutoService();
-      const produto = await produtoService.cadastrarProduto(product);
-      if (!produto) {
-        return toast.error('Erro ao cadastrar produto!');
-      }
-      loadProducts();
-      toast.success('Produto cadastrado com sucesso!');
+
+    const produtoService = new ProdutoService();
+    const produto = await produtoService.cadastrarProduto(product);
+    if (!produto) {
+      return toast.error('Erro ao cadastrar produto!');
     }
+    loadProducts();
+    toast.success('Produto cadastrado com sucesso!');
+
     setShowForm(false);
     setEditingProduct(null);
   };
@@ -95,7 +131,7 @@ export function AdminDashboard() {
                 onClick={() => navigate('/')}
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-900 bg-gray-100 px-4 py-2 rounded-lg transition-all duration-300"
               >
-                <ShoppingBagIcon className="h-5 w-5" />
+                <HomeIcon className="h-5 w-5" />
                 Inicio
               </button>
               <button
@@ -181,7 +217,7 @@ export function AdminDashboard() {
                               <div className="h-14 w-14 flex-shrink-0">
                                 <img
                                   className="h-14 w-14 rounded-lg object-cover shadow-sm"
-                                  src={product.imagens[0].url}
+                                  src={product.imagens[0]?.url}
                                   alt={product.titulo}
                                 />
                               </div>
@@ -226,7 +262,7 @@ export function AdminDashboard() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <button
-                              onClick={() => handleEdit(product)}
+                              onClick={() => handleEdit(product.id)}
                               className="text-indigo-600 hover:text-indigo-900 mr-4 p-2 hover:bg-indigo-50 rounded-lg transition-all"
                               title="Editar produto"
                             >
@@ -256,17 +292,32 @@ export function AdminDashboard() {
         <div className="p-4">
           <h2 className="text-xl font-bold mb-4">Vendas Realizadas</h2>
           <div className="space-y-4">
-            <div className="border rounded-lg p-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-medium">Pedido #1234</span>
-                <span className="text-green-600">R$ 699,90</span>
-              </div>
-              <div className="text-sm text-gray-600">
-                <p>Cliente: João Silva</p>
-                <p>Data: 15/04/2024</p>
-                <p>Produtos: Relógio Smart Premium</p>
-              </div>
-            </div>
+            {
+              loadingReserva ? (
+                <Loading />
+              ) : (
+                reservas.map((reserva) => (
+                  <div className="border rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium">Pedido #{reserva.id}</span>
+                      <span className="text-green-600">R$ {Number(reserva.valorTotal)}</span>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <p>Nome: {reserva.nome}</p>
+                      <p>Email: {reserva.email}</p>
+                      <p>Telefone: {reserva.telefone}</p>
+                      <p>Instagram: {reserva.instagram}</p>
+                      <p>Endereço: {reserva.endereco}</p>
+                      <p>Referência: {reserva.referencia}</p>
+                      <p>Entrega: {reserva.entrega ? 'Sim' : 'Não'}</p>
+                      <p>Retirada: {reserva.retirada ? 'Sim' : 'Não'}</p>
+                      <p>Quantidade: {Number(reserva.quantidade)}</p>
+                      <p>Produto: {reserva.produto.titulo}</p>
+                    </div>
+                  </div>
+                ))
+              )
+            }
           </div>
         </div>
       </Drawer>
