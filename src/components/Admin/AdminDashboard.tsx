@@ -290,13 +290,16 @@ export function AdminDashboard() {
       <Drawer isOpen={isDrawerOpen} onClose={toggleDrawer}>
         <div className="p-4">
           <h2 className="text-xl font-bold mb-4">Vendas Realizadas</h2>
-          <div className="space-y-4">
+          <div
+            className="space-y-4 overflow-y-auto"
+            style={{ maxHeight: "95vh" }} // Define o máximo de altura e ativa o scroll se necessário
+          >
             {
               loadingReserva ? (
                 <Loading />
               ) : (
                 reservas.map((reserva) => (
-                  <div className="border rounded-lg p-4">
+                  <div className="border rounded-lg p-6">
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-medium">Pedido #{reserva.id}</span>
                       <span className="text-green-600">R$ {Number(reserva.valorTotal)}</span>
@@ -320,6 +323,7 @@ export function AdminDashboard() {
           </div>
         </div>
       </Drawer>
+
     </div>
   );
 }
