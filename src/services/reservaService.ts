@@ -7,7 +7,7 @@ export default class ReservaService {
             if (response.status !== 200) {
                 return false;
             }
-            return true;
+            return response.json();
         } catch (error) {
             console.error(error);
             return null;
