@@ -9,6 +9,8 @@ type Product = {
   preco: number;
   precoPromocional?: number; // Tornei opcional
   quantidade: number;
+  instagram: string;
+  whats: string;
   imagens: Array<{ url: string }>;
 };
 
@@ -111,11 +113,11 @@ export function ProductCard({ product, isAcao }: ProductCardProps) {
       {isAcao ? (
         <>
           <div className="flex justify-center gap-6 mb-4">
-            <a href="https://instagram.com" className="flex flex-col items-center text-pink-600">
+            <a href={`https://www.instagram.com/${product.instagram}`} target='_blank' className="flex flex-col items-center text-pink-600">
               <Instagram className="h-6 w-6" />
               <span className="text-xs mt-1">Seguir</span>
             </a>
-            <a href="https://wa.me/" className="flex flex-col items-center text-green-600">
+            <a href={`https://wa.me/${product.whats}?text=Olá, gostaria de saber mais sobre o produto ${encodeURIComponent(product.titulo)}`}  target='_blank' className="flex flex-col items-center text-green-600">
               <MessageCircle className="h-6 w-6" />
               <span className="text-xs mt-1">Contato</span>
             </a>

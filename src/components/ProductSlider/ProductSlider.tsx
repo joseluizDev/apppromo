@@ -9,6 +9,8 @@ type Product = {
   preco: number;
   precoPromocional?: number;
   quantidade: number;
+  instagram: string;
+  whats: string;
   imagens: Array<{ url: string }>;
 };
 

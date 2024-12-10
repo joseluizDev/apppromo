@@ -14,6 +14,8 @@ type Product = {
   preco: number;
   precoPromocional?: number; // Tornei opcional
   quantidade: number;
+  instagram: string;
+  whats: string;
   imagens: Array<{ url: string }>;
 };
 

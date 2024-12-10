@@ -14,6 +14,8 @@ const productSchema = z.object({
   quantidade: z.string().min(1, 'Quantidade é obrigatória'),
   CategoriaId: z.string().min(1, 'Categoria é obrigatória'),
   imagens: z.instanceof(FileList).optional(),
+  instagram: z.string().min(1, 'Instagram é obrigatório'),
+  whats: z.string().min(1, 'WhatsApp é obrigatório'),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -44,8 +46,12 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
       precoPromocional: initialData.precoPromocional?.toString() || '',
       quantidade: initialData.quantidade.toString(),
       CategoriaId: initialData.CategoriaId,
+      instagram: initialData.instagram,
+      whats: initialData.whats,
     } : undefined,
   });
+
+  console.log(initialData);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -68,6 +74,8 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
     formData.append('titulo', data.titulo);
     formData.append('descricao', data.descricao);
     formData.append('preco', data.preco);
+    formData.append('instagram', data.instagram);
+    formData.append('whats', data.whats);
     formData.append('categoriaId', data.CategoriaId);
     if (initialData) {
       formData.append('id', initialData.id);
@@ -216,6 +224,40 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
             {
               errors.CategoriaId && (
                 <p className="text-red-500 text-sm mt-1">{errors.CategoriaId.message}</p>
+              )
+            }
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Instagram
+            </label>
+            <input
+              {...register('instagram')}
+              type="text"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              defaultValue={initialData?.instagram}
+            />
+            {errors.instagram && (
+              <p className="text-red-500 text-sm mt-1">{errors.instagram.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              WhatsApp
+            </label>
+            <input
+              {...register('whats')}
+              type="text"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              defaultValue={initialData?.whats}
+            />
+            {
+              errors.whats && (
+                <p className="text-red-500 text-sm mt-1">{errors.whats.message}</p>
               )
             }
           </div>

@@ -9,7 +9,6 @@ import AdminService from '../../services/adminService';
 import Loading from '../Loading';
 import ReservaService from '../../services/reservaService';
 import LoginService from '../../services/loginService';
-import middleware from '../../middleware';
 
 type Product = {
   id: number;
