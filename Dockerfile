@@ -1,31 +1,30 @@
-# Etapa 1: Construção do projeto
-FROM node:18 AS build
+# Acesse https://aka.ms/customizecontainer para saber como personalizar seu contêiner de depuração e como o Visual Studio usa este Dockerfile para criar suas imagens para uma depuração mais rápida.
 
-# Diretório de trabalho dentro do container
+# Esta fase é usada durante a execução no VS no modo rápido (Padrão para a configuração de Depuração)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER $APP_UID
 WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
 
-# Copiar os arquivos de dependências
-COPY package.json package-lock.json ./
-# Caso esteja usando o yarn, use 'yarn.lock' ao invés de 'package-lock.json'
-RUN npm ci --only=production
 
-# Instalar dependências
-RUN npm install  # Ou 'yarn install' se estiver usando o Yarn
-
-# Copiar todo o código fonte para dentro do container
+# Esta fase é usada para compilar o projeto de serviço
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["BackAppPromo.csproj", "."]
+RUN dotnet restore "./BackAppPromo.csproj"
 COPY . .
+WORKDIR "/src/."
+RUN dotnet build "./BackAppPromo.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Construir o projeto
-RUN npm run build  # Ou 'yarn build' se estiver usando o Yarn
+# Esta fase é usada para publicar o projeto de serviço a ser copiado para a fase final
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./BackAppPromo.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Etapa 2: Produção
-FROM nginx:alpine
-
-# Copiar os arquivos construídos da etapa anterior
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Expor a porta 80 para acesso externo
-EXPOSE 80
-
-# Iniciar o servidor Nginx (não é necessário rodar o Vite aqui porque ele é um servidor de desenvolvimento)
-CMD ["nginx", "-g", "daemon off;"]
+# Esta fase é usada na produção ou quando executada no VS no modo normal (padrão quando não está usando a configuração de Depuração)
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "BackAppPromo.dll"]

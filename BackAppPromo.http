@@ -1,0 +1,6 @@
+@BackAppPromo_HostAddress = http://localhost:5210
+
+GET {{BackAppPromo_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
