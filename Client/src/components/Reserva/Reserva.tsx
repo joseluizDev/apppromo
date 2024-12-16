@@ -1,15 +1,15 @@
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "react-toastify";
-import { ProductCard } from "../ProductCard/ProductCard";
-import { Banner } from "../Banner/Banner";
-import { PromoBanner } from "../PromoBanner/PromoBanner";
-import { useNavigate } from "react-router-dom";
-import ReservaService from "../../services/reservaService";
-import { useState } from "react";
-import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { z } from "zod";
+import ReservaService from "../../services/reservaService";
+import { Banner } from "../Banner/Banner";
+import { ProductCard } from "../ProductCard/ProductCard";
+import PromoBanner from "../PromoBanner/PromoBanner";
 
 type Product = {
     id: number;

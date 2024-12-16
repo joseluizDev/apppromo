@@ -3,6 +3,7 @@ import HttpClient from "../http/httpClient";
 
 
 export default class BannerService {
+ 
     async listarBanners() {
         try {
             const response = await HttpClient.get('Banner/listar');

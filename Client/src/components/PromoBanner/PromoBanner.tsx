@@ -1,30 +1,47 @@
 import { useEffect, useState } from 'react';
+import BannerService from '../../services/bannerService';
 
-const promos = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a",
-    title: "Mega Promoção de Verão",
-    description: "Até 50% OFF em produtos selecionados"
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da",
-    title: "Frete Grátis",
-    description: "Em compras acima de R$ 200"
-  },
-];
+interface Promo {
+  id: number;
+  titulo: string;
+  imagem: string;
+  temp: number; // Tempo em milissegundos que cada banner será exibido
+}
 
-export function PromoBanner() {
+const PromoBanner: React.FC = () => {
+  const [promos, setPromos] = useState<Promo[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Fetch banners inicial
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % promos.length);
-    }, 5000); 
-    return () => clearInterval(timer);
+    async function fetchPromos() {
+      const bannerService = new BannerService();
+    
+      try {
+        const response = await bannerService.listarBanners();
+        if (!response) {
+          console.error('Failed to fetch banners');
+          return;
+        }
+        setPromos(response);
+      } catch (error) {
+        console.error('Failed to fetch banners', error);
+      }
+    }
+
+    fetchPromos();
   }, []);
 
+  // Efeito para gerenciar a rotação dos banners
+  useEffect(() => {
+    const timer = promos.length > 0 ? setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % promos.length);
+    }, promos[currentIndex].temp || 5000) : undefined;
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [promos, currentIndex]);
 
   return (
     <div className="relative w-full h-20 bg-gray-100 overflow-hidden">
@@ -38,14 +55,14 @@ export function PromoBanner() {
             className="w-full h-full flex-shrink-0 relative"
           >
             <img
-              src={promo.image}
-              alt={promo.title}
+              src={promo.imagem}
+              alt={promo.titulo}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center px-8">
+            <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center px-2">
               <div className="text-white">
-                <h3 className="text-2xl font-bold mb-2">{promo.title}</h3>
-                <p className="text-lg">{promo.description}</p>
+                <h5 className="text-2xl font-bold ">{promo.titulo}</h5>
+               
               </div>
             </div>
           </div>
@@ -56,12 +73,12 @@ export function PromoBanner() {
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              index === currentIndex ? 'bg-white' : 'bg-white/50'
-            }`}
+            className={`w-2 h-2 rounded-full transition-colors ${index === currentIndex ? 'bg-white' : 'bg-white/50'}`}
           />
         ))}
       </div>
     </div>
   );
-}
+};
+
+export default PromoBanner;
