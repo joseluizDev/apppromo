@@ -18,7 +18,6 @@ namespace BackAppPromo.Web.Controllers
 
         [HttpGet]
         [Route("listar")]
-        [Authorize]
         public async Task<IActionResult> ObterBanner()
         {
             var retorno = await _bannerService.ObterBanner();
