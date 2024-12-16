@@ -48,7 +48,10 @@ builder.Services.AddSwaggerGen(c =>
 // Configuração do banco de dados
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var versao = ServerVersion.AutoDetect(connectionString);
+
+    options.UseMySql(connectionString, versao);
 });
 
 // Repositórios e serviços
