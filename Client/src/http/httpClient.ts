@@ -1,11 +1,12 @@
 import Cookie from 'js-cookie';
 
-const baseUrl = "http://localhost:5210/api/";
+const baseUrl = "https://server-domingos-reserva-api.uwqcav.easypanel.host:8080/api"; 
 
 const HttpClient = {
     get: function (path: string, token: boolean = false) {
         const auth = Cookie.get('token'); // Obtém o token dinamicamente
         return fetch(baseUrl + path, {
+            
             method: 'GET',
             headers: {
                 Authorization: token && auth ? `Bearer ${auth}` : '',
