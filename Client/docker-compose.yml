@@ -3,12 +3,14 @@ version: "3.8"
 services:
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./Client # Caminho para a pasta onde está o Dockerfile (ajuste conforme necessário)
+      dockerfile: Dockerfile # Nome do Dockerfile
     ports:
-      - "80:80"
+      - "80:80" # Mapeia a porta 80 do container para a porta 80 do host
     volumes:
-      - ./src:/app/src
-      - ./public:/app/public
+      - ./Client/src:/app/src # Sincroniza o diretório 'src' do host com o container
+      - ./Client/public:/app/public # Sincroniza o diretório 'public' do host com o container
+      - ./Client/package.json:/app/package.json # Sincroniza o package.json (opcional)
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=production # Define a variável de ambiente
+    command: ["npm", "start"] # Comando padrão para iniciar o servidor no container
