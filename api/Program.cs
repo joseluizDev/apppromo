@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Configuração do Swagger com suporte a Bearer Token
+// Configuraï¿½ï¿½o do Swagger com suporte a Bearer Token
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -45,7 +45,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configuração do banco de dados
+// Configuraï¿½ï¿½o do banco de dados
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -54,7 +54,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, versao);
 });
 
-// Repositórios e serviços
+// Repositï¿½rios e serviï¿½os
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
@@ -71,7 +71,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoriaSerivce>();
 builder.Services.AddScoped<ValidadorUtils>();
 
-// Configuração do MinIO
+// Configuraï¿½ï¿½o do MinIO
 builder.Services.AddSingleton<IMinioStorage>(provider =>
     new MinioStorage(
         endpoint: builder.Configuration["Minio:Endpoint"],
@@ -80,7 +80,7 @@ builder.Services.AddSingleton<IMinioStorage>(provider =>
     )
 );
 
-// Configuração de CORS
+// Configuraï¿½ï¿½o de CORS
 string corsPolicyName = "AllowAnyOrigin";
 builder.Services.AddCors(options =>
 {
@@ -92,7 +92,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configuração da autenticação com JWT
+// Configuraï¿½ï¿½o da autenticaï¿½ï¿½o com JWT
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {
@@ -107,24 +107,23 @@ builder.Services.AddAuthentication("Bearer")
             ValidateAudience = true,
             ValidAudience = builder.Configuration["Jwt:Audience"],
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero // Sem tolerância para expiração
+            ClockSkew = TimeSpan.Zero // Sem tolerï¿½ncia para expiraï¿½ï¿½o
         };
     });
 
 // Configure the HTTP request pipeline.
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 
 app.UseCors(corsPolicyName);
 
-// Configuração de autenticação e autorização
+// Configuraï¿½ï¿½o de autenticaï¿½ï¿½o e autorizaï¿½ï¿½o
 app.UseAuthentication();
 app.UseAuthorization();
 
