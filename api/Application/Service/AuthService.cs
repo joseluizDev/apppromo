@@ -25,10 +25,6 @@ namespace BackAppPromo.Application.Service
 
         public async Task<AuthOutputDto> Login(UsuarioInputDto usuario)
         {
-            if (!ValidarUsuario(usuario))
-            {
-                throw new UsuarioInvalidaException("Email ou/e Senha inválido");
-            }
 
             Usuario map = MapUsuario(usuario);
             Usuario obter = await _usuarioService.ObterUsuarioEmail(usuario.Email);
@@ -44,18 +40,6 @@ namespace BackAppPromo.Application.Service
             return MapAuth(obter, token);
         }
 
-        private bool ValidarUsuario(UsuarioInputDto usuario)
-        {
-            if (!_validadorUtils.ValidarEmail(usuario.Email))
-            {
-                throw new EmailInvalidoException("Email inválido");
-            }
-            if (!_validadorUtils.ValidarSenha(usuario.Senha))
-            {
-                throw new SenhaInvalidaException("Senha inválida");
-            }
-            return true;
-        }
 
         private AuthOutputDto MapAuth(Usuario usuario, string token)
         {
