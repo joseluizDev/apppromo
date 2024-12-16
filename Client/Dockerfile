@@ -2,7 +2,7 @@
 FROM node:18 AS build
 
 # Diretório de trabalho dentro do container
-WORKDIR /app
+WORKDIR /app/Client
 
 # Copiar os arquivos de dependências
 COPY package.json package-lock.json ./
