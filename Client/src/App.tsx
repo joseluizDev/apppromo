@@ -1,16 +1,16 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AdminDashboard } from './components/Admin/AdminDashboard';
 import { Login } from './components/Admin/AdminLogin';
+import BannerManager from './components/Admin/BannerEdit';
+import EditarProduto from './components/Admin/EditarProduto';
 import { Home } from './components/Home/Home';
 import NotFound from './components/NotFound/NotFound';
-import { UserProvider } from './context/context';
-import EditarProduto from './components/Admin/EditarProduto';
 import Reserva from './components/Reserva/Reserva';
+import { UserProvider } from './context/context';
 import middleware from './middleware'; // Import middleware function
-
 interface ProtectedRouteProps {
   children: React.ReactElement;
 }
@@ -55,6 +55,7 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
+          <Route path="/admin/Banner" element={<BannerManager />} />
           <Route path="/reserva" element={<Reserva />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

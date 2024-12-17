@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
+import CategoriaService from '../../services/categoriaService';
+import HomeService from '../../services/homeService';
 import { Banner } from '../Banner/Banner';
+import Loading from '../Loading';
 import { ProductSlider } from '../ProductSlider/ProductSlider';
 import { PromoBanner } from '../PromoBanner/PromoBanner';
-import HomeService from '../../services/homeService';
-import { toast } from 'react-toastify';
-import Loading from '../Loading';
-import CategoriaService from '../../services/categoriaService';
 
 type Product = {
   id: number;

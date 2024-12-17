@@ -1,14 +1,14 @@
-import { LogOut, Pencil, Plus, ShoppingBag, Trash2, HomeIcon } from 'lucide-react';
+import { HomeIcon, LogOut, Pencil, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Drawer } from '../Drawer';
-import { ProductForm } from './ProductForm';
-import ProdutoService from '../../services/produtoService';
 import { toast } from 'react-toastify';
 import AdminService from '../../services/adminService';
-import Loading from '../Loading';
-import ReservaService from '../../services/reservaService';
 import LoginService from '../../services/loginService';
+import ProdutoService from '../../services/produtoService';
+import ReservaService from '../../services/reservaService';
+import { Drawer } from '../Drawer';
+import Loading from '../Loading';
+import { ProductForm } from './ProductForm';
 
 type Product = {
   id: number;
@@ -164,6 +164,7 @@ export function AdminDashboard() {
           />
         ) : (
           <>
+          <div className="flex justify-between items-center mb-6">
             <div className="mb-6">
               <button
                 onClick={() => setShowForm(true)}
@@ -173,7 +174,18 @@ export function AdminDashboard() {
                 Adicionar Produto
               </button>
             </div>
+          {/* cadastrar banner */}
+          <div className="mb-6">
+            <button
+              onClick={() => navigate('/admin/banner')}
+              className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-800 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-900 transition-all duration-300 shadow-md font-medium"
+            >
+              <Plus className="h-5 w-5" />
+              Adicionar Banner
+            </button>
+          </div>
 
+            </div>
             {loading ? (
               <Loading />
             ) : (

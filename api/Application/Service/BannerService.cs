@@ -41,7 +41,7 @@ namespace BackAppPromo.Application.Service
             string objectName = $"{Guid.NewGuid()}.{typeImg}";
 
             string url = await _minioStorage.UploadFileAsync(bucketName, objectName, banner.Imagem.OpenReadStream(), type);
-            if(url == null)
+            if (url == null)
             {
                 throw new ImagemInvalidoException("Imagem não foi salva");
             }
@@ -89,6 +89,4 @@ namespace BackAppPromo.Application.Service
             return banners.MapBanner(banners);
         }
     }
-
-
 }
