@@ -47,7 +47,7 @@ export default class BannerService {
 
    async deletarBanner(id: number) {
       try {
-         const response = await HttpClient.delete(`Banner/remover/${id}`);
+         const response = await HttpClient.delete(`Banner/deletar/${id}`);
          if (response.status !== 200) {
             return false;
          }

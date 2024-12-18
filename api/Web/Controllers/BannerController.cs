@@ -26,7 +26,7 @@ namespace BackAppPromo.Web.Controllers
 
         [HttpPost]
         [Route("cadastrar")]
-        [Authorize]
+
         public async Task<IActionResult> CadastrarBanner([FromForm] BannerInputDto banner)
         {
             var retorno = await _bannerService.AdicionarBanner(banner);
@@ -35,7 +35,6 @@ namespace BackAppPromo.Web.Controllers
 
         [HttpDelete]
         [Route("deletar/${id}")]
-        [Authorize]
         public async Task<IActionResult> DeletarBanner([FromRoute] int id)
         {
             var retorno = await _bannerService.DeletarBanner(id);
@@ -44,7 +43,6 @@ namespace BackAppPromo.Web.Controllers
 
         [HttpPut]
         [Route("alterar")]
-        [Authorize]
         public async Task<IActionResult> AtualizarBanner([FromForm] BannerInputDto banner)
         {
             var retorno = await _bannerService.AdicionarBanner(banner);
