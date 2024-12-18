@@ -45,7 +45,7 @@ namespace BackAppPromo.Web.Controllers
         [Route("alterar")]
         public async Task<IActionResult> AtualizarBanner([FromForm] BannerInputDto banner)
         {
-            var retorno = await _bannerService.AdicionarBanner(banner);
+            var retorno = await _bannerService.AtualizarBanner(banner);
             return Ok(retorno);
         }
     }

@@ -32,8 +32,21 @@ namespace BackAppPromo.Infrastructure.Repositories
 
         public async Task<Banner> AtualizarBanner(Banner banner)
         {
-            _context.Entry(banner).State = EntityState.Modified;
+            // Verifica se o banner está sendo rastreado e resolve o problema de múltiplas instâncias.
+            var trackedEntity = _context.ChangeTracker.Entries<Banner>()
+                .FirstOrDefault(e => e.Entity.Ban_id == banner.Ban_id);
+
+            if (trackedEntity != null)
+            {
+                _context.Entry(trackedEntity.Entity).State = EntityState.Detached;
+            }
+
+            // Atualiza o banner
+            _context.Banner.Update(banner);
+
+            // Salva as alterações no banco de dados
             await _context.SaveChangesAsync();
+
             return banner;
         }
 

@@ -44,7 +44,7 @@ const PromoBanner: React.FC = () => {
   }, [promos, currentIndex]);
 
   return (
-    <div className="relative w-full h-20 bg-gray-100 overflow-hidden">
+    <div className="relative w-full h-[120px] bg-gray-100 overflow-hidden">
       <div
         className="flex h-full transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}

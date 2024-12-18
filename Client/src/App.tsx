@@ -55,7 +55,13 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
-          <Route path="/admin/Banner" element={<BannerManager />} />
+          <Route path="/admin/Banner"
+            element={
+              <ProtectedRoute>
+                <BannerManager />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/reserva" element={<Reserva />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

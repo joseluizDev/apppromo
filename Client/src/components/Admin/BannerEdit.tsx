@@ -51,7 +51,7 @@ export default function BannerManager() {
     let success;
     if (editingBanner) {
       formData.append("id", editingBanner.id.toString());
-      success = await bannerService.cadastrarBanner(formData);
+      success = await bannerService.EditBanner(formData);
     } else {
       success = await bannerService.cadastrarBanner(formData);
     }
