@@ -5,7 +5,7 @@ import HomeService from '../../services/homeService';
 import { Banner } from '../Banner/Banner';
 import Loading from '../Loading';
 import { ProductSlider } from '../ProductSlider/ProductSlider';
-import PromoBanner from '../PromoBanner/PromoBanner';
+import { PromoBanner } from '../PromoBanner/PromoBanner';
 
 type Product = {
   id: number;
