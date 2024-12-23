@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import BannerService from '../../services/bannerService';
+import { HomeIcon, LogOut, ShoppingBag } from 'lucide-react';
 
 interface Promo {
   id: number;
@@ -16,7 +17,7 @@ const PromoBanner: React.FC = () => {
   useEffect(() => {
     async function fetchPromos() {
       const bannerService = new BannerService();
-    
+
       try {
         const response = await bannerService.listarBanners();
         if (!response) {
@@ -62,7 +63,7 @@ const PromoBanner: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center px-2">
               <div className="text-white">
                 <h5 className="text-2xl font-bold ">{promo.titulo}</h5>
-               
+
               </div>
             </div>
           </div>

@@ -164,26 +164,37 @@ export function AdminDashboard() {
           />
         ) : (
           <>
-          <div className="flex justify-between items-center mb-6">
-            <div className="mb-6">
-              <button
-                onClick={() => setShowForm(true)}
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-800 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-purple-900 transition-all duration-300 shadow-md font-medium"
-              >
-                <Plus className="h-5 w-5" />
-                Adicionar Produto
-              </button>
-            </div>
-          {/* cadastrar banner */}
-          <div className="mb-6">
-            <button
-              onClick={() => navigate('/admin/banner')}
-              className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-800 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-900 transition-all duration-300 shadow-md font-medium"
-            >
-              <Plus className="h-5 w-5" />
-              Adicionar Banner
-            </button>
-          </div>
+            <div className="flex justify-between items-center mb-6">
+              <div className="mb-6">
+                <button
+                  onClick={() => setShowForm(true)}
+                  className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-800 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-purple-900 transition-all duration-300 shadow-md font-medium"
+                >
+                  <Plus className="h-5 w-5" />
+                  Adicionar Produto
+                </button>
+              </div>
+              {/* cadastrar categoria */}
+              <div className='flex gap-6'> 
+                <div className="mb-6">
+                  <button
+                    onClick={() => navigate('/admin/banner')}
+                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-800 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-900 transition-all duration-300 shadow-md font-medium"
+                  >
+                    Banner
+                  </button>
+                </div>
+                {/* cadastrar banner */}
+                <div className="mb-6">
+                  <button
+                    onClick={() => navigate('/admin/Categoria')}
+                    className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-blue-900 transition-all duration-300 shadow-md font-medium"
+                  >
+
+                    Categoria
+                  </button>
+                </div>
+              </div>
 
             </div>
             {loading ? (

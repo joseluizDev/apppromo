@@ -34,13 +34,13 @@ export default function EditarProduto() {
     }, []);
 
     const handleSave = async (product: FormData) => {
-        console.log(product);
         const produtoService = new ProdutoService();
         const produto = await produtoService.atualizarProduto(product);
         if (!produto) {
             return toast.error('Erro ao cadastrar produto!');
         }
         toast.success('Produto cadastrado com sucesso!');
+        navigate('/admin');
     };
 
 

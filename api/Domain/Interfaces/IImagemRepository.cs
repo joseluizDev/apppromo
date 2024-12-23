@@ -8,5 +8,6 @@ namespace BackAppPromo.Domain.Interfaces
         Task<Imagem> AdicionarImagem(Imagem imagem);
         Task<Imagem> AtualizarImagem(Imagem imagem);
         Task<bool> RemoverImagem(int id);
+        Task<bool> RemoverImagemPorUrl(string url);
     }
 }

@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { string, z } from 'zod';
 import { useUserContext } from '../../context/context';
 import CategoriaService from '../../services/categoriaService';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import ProdutoService from '../../services/produtoService';
 
 const productSchema = z.object({
   titulo: z.string().min(1, 'Título é obrigatório'),
@@ -13,7 +15,7 @@ const productSchema = z.object({
   precoPromocional: z.string().optional(),
   quantidade: z.string().min(1, 'Quantidade é obrigatória'),
   CategoriaId: z.string().min(1, 'Categoria é obrigatória'),
-  imagens: z.instanceof(FileList).optional(),
+  imagens: z.any().optional(),
   instagram: z.string().min(1, 'Instagram é obrigatório'),
   whats: z.string().min(1, 'WhatsApp é obrigatório'),
 });
@@ -36,6 +38,7 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const imagens = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const { user } = useUserContext();
   const { register, handleSubmit, formState: { errors }, reset } = useForm<ProductFormData>({
@@ -61,9 +64,19 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
     }
   };
 
-  const removeImage = (indexToRemove: number) => {
+  const removerImagem = async (url: string) => {
+    const produtoService = new ProdutoService();
+    const imagem = await produtoService.removerImagem(url);
+    if (!imagem) {
+      return toast.error('Erro ao remover imagem!');
+    }
+  };
+
+  const removeImage = (indexToRemove: number, imageUrl: string) => {
+    removerImagem(imageUrl);
     setSelectedImages(prev => {
       const newImages = prev.filter((_, index) => index !== indexToRemove);
+      
       URL.revokeObjectURL(prev[indexToRemove]);
       return newImages;
     });
@@ -85,11 +98,17 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
     }
     formData.append('quantidade', data.quantidade);
 
-    if (imagens.current?.files) {
+    if (imagens.current?.files && imagens.current.files.length > 0) {
       for (let i = 0; i < imagens.current.files.length; i++) {
         formData.append('imagens', imagens.current.files[i]);
       }
     }
+    if (selectedImages.length > 0) {
+      selectedImages.forEach(imageUrl => {
+        formData.append('existingImages', imageUrl);
+      });
+    }
+
     formData.append('usuarioId', user.id);
 
     onSave(formData);
@@ -281,7 +300,7 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
                 />
                 <button
                   type="button"
-                  onClick={() => removeImage(index)}
+                  onClick={() => removeImage(index, imageUrl)}
                   className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                 >
                   <svg
@@ -333,11 +352,6 @@ export function ProductForm({ initialData, onSave, onCancel }: ProductFormProps)
               </div>
             </label>
           </div>
-          {
-            errors.imagens && (
-              <p className="text-red-500 text-sm mt-1">{errors.imagens.message}</p>
-            )
-          }
         </div>
 
         <div className="flex justify-end gap-4">

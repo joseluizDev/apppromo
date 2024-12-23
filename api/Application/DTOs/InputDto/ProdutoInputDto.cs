@@ -8,10 +8,11 @@
         public decimal Preco { get; set; }
         public decimal PrecoPromocional { get; set; }
         public int Quantidade { get; set; }
-        public List<IFormFile> Imagens { get; set; }
+        public List<IFormFile>? Imagens { get; set; }
         public int CategoriaId { get; set; }
         public int UsuarioId { get; set; }
         public string Instagram { get; set; }
         public string Whats { get; set; }
+        public List<string>? ExistingImages { get; set; }
     }
 }

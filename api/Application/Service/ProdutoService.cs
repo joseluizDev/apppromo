@@ -78,10 +78,11 @@ namespace BackAppPromo.Application.Service
         {
             Produto map = MapProduto(produto);
             Produto retorno = await _produtoRepository.AtualizarProduto(map);
-            if(retorno != null)
+
+            if (retorno != null)
             {
-                var imagens = await _imagemRepository.RemoverImagem(produto.Id);
-                if (imagens)
+                // Se novas imagens foram enviadas, processe-as
+                if (produto.Imagens != null && produto.Imagens.Any())
                 {
                     foreach (var imagemFile in produto.Imagens)
                     {
@@ -89,21 +90,26 @@ namespace BackAppPromo.Application.Service
                         string type = imagemFile.ContentType;
                         string typeImg = type.Split('/')[1];
                         string objectName = $"{Guid.NewGuid()}.{typeImg}";
+
                         using (var stream = imagemFile.OpenReadStream())
                         {
+                            // Faz o upload da nova imagem
                             string url = await _minioStorage.UploadFileAsync(bucketName, objectName, stream, type);
                             Imagem imagem = MapImagem(retorno, url);
                             var img = await _imagemRepository.AdicionarImagem(imagem);
+
                             if (img == null)
                             {
-                                throw new ImagemInvalidoException("Uma ou mais imagens não foram salvas");
+                                throw new ImagemInvalidoException("Uma ou mais imagens não foram salvas.");
                             }
                         }
                     }
                 }
             }
+
             return retorno;
         }
+
 
         public async Task<bool> RemoverProduto(int id)
         {

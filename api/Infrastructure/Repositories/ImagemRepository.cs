@@ -34,12 +34,26 @@ namespace BackAppPromo.Infrastructure.Repositories
 
         public async Task<bool> RemoverImagem(int id)
         {
-             var imagem = await _context.Imagem.FindAsync(id);
-            if (imagem == null)
+            // Obter todas as imagens associadas ao produto
+            var imagens = await _context.Imagem
+                .Where(p => p.Pro_id == id)
+                .ToListAsync();
+
+            // Remover todas as imagens encontradas
+            if (imagens.Count > 0)
             {
-                return false;
+                _context.RemoveRange(imagens);
+                await _context.SaveChangesAsync();
             }
-            _context.Remove(imagem);
+
+            return true;
+        }
+
+        public async Task<bool> RemoverImagemPorUrl(string url)
+        {
+            var imagem = await _context.Imagem.FirstOrDefaultAsync(x => x.Img_url == url);
+
+            _context.Imagem.Remove(imagem);
             await _context.SaveChangesAsync();
             return true;
         }

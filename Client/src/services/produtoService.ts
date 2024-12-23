@@ -15,7 +15,7 @@ export default class ProdutoService {
         }
     }
 
-    async deletarProduto(id: number){
+    async deletarProduto(id: number) {
         try {
             const response = await HttpClient.delete(`Produto/remover/$${id}`, true);
             if (response.status !== 200) {
@@ -39,5 +39,18 @@ export default class ProdutoService {
             console.error("Erro ao atualizar produto", error);
             return false;
         }
-    }    
+    }
+
+    async removerImagem(url: string) {
+        try {
+            const response = await HttpClient.post(`Imagem/deletar`, {url}, true); 
+            if (response.status !== 200) {
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error("Erro ao remover imagem", error);
+            return false;
+        }
+    }
 }

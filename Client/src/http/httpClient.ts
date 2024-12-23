@@ -1,7 +1,8 @@
 import Cookie from 'js-cookie';
 
-const baseUrl = "https://server-domingos-reserva-api.uwqcav.easypanel.host/api/"; 
-// const baseUrl = "https://localhost:7208/api/"; 
+// const baseUrl = "https://server-domingos-reserva-api.uwqcav.easypanel.host/api/"; 
+const baseUrl = "https://localhost:7208/api/"; 
+
 
 const HttpClient = {
     get: function (path: string, token: boolean = false) {

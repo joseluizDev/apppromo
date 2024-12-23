@@ -11,6 +11,8 @@ import NotFound from './components/NotFound/NotFound';
 import Reserva from './components/Reserva/Reserva';
 import { UserProvider } from './context/context';
 import middleware from './middleware'; // Import middleware function
+import CategoriaManager from './components/Admin/CategoriaManager';
+import EditarCategoria from './components/Admin/EditarCategoria';
 interface ProtectedRouteProps {
   children: React.ReactElement;
 }
@@ -62,6 +64,18 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
+          <Route path='/admin/Categoria'
+            element={
+              <ProtectedRoute>
+                <CategoriaManager />
+              </ProtectedRoute>
+            } />
+          <Route path='/admin/Categoria/:id'
+            element={
+              <ProtectedRoute>
+                <EditarCategoria />
+              </ProtectedRoute>
+            } />
           <Route path="/reserva" element={<Reserva />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

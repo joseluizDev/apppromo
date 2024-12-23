@@ -67,6 +67,7 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ProdutoService>();
 builder.Services.AddScoped<ReservaService>();
 builder.Services.AddScoped<BannerService>();
+builder.Services.AddScoped<ImagemService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoriaSerivce>();
 builder.Services.AddScoped<ValidadorUtils>();
