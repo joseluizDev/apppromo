@@ -51,28 +51,35 @@ type Reserva = {
     produto: Products;
 }
 
-
-
 const productSchema = z.object({
     nome: z
         .string()
         .min(1, "Nome é obrigatório")
-        .regex(/^(\w+\s\w+)/, "Informe pelo menos dois nomes"),
+        .regex(/^\w+\s\w+$/, "Informe pelo menos dois nomes"),
     email: z
         .string()
         .min(1, "Email é obrigatório")
         .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Insira um endereço de email válido"),
     telefone: z.string().min(1, "Telefone é obrigatório"),
     instagram: z.string().min(1, "Instagram é obrigatório"),
-    endereco: z.string().min(1, "Endereço é obrigatório"),
-    referencia: z.string().optional(), // Permite valores opcionais
+    endereco: z.string().optional(),
+    referencia: z.string().optional(),
     metodoRecebimento: z
         .string()
         .min(1, "Método de recebimento é obrigatório"),
     quantidade: z
         .number()
-        .positive("Quantidade deve ser maior que 0")
+        .positive("Quantidade deve ser maior que 0"),
+}).superRefine((data, ctx) => {
+    if (data.metodoRecebimento === "entrega" && !data.endereco) {
+        ctx.addIssue({
+            code: "custom",
+            path: ["endereco"],
+            message: "Endereço é obrigatório quando o método de recebimento é entrega",
+        });
+    }
 });
+
 
 type ProductFormData = z.infer<typeof productSchema>;
 
@@ -99,6 +106,7 @@ export default function Reserva() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const quantidade = watch("quantidade") || 1;
+    const metodoRecebimento = watch("metodoRecebimento");
 
     const precoUnitario =
         produto && produto.precoPromocional > 0
@@ -116,6 +124,8 @@ export default function Reserva() {
                 boolEntrega = true;
             } else {
                 boolRetirada = true;
+                data.endereco = "";
+                data.referencia = "";
             }
 
             const obj = {
@@ -265,41 +275,45 @@ export default function Reserva() {
                                             </div>
                                         </div>
 
-                                        {/* Endereço */}
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Endereço
-                                            </label>
-                                            <input
-                                                {...register("endereco")}
-                                                type="text"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                                placeholder="Rua, número, bairro"
-                                            />
-                                            {errors.endereco && (
-                                                <p className="text-red-500 text-sm mt-1">
-                                                    {errors.endereco.message}
-                                                </p>
-                                            )}
-                                        </div>
+                                        {metodoRecebimento == "entrega" && (
+                                            <>
+                                                {/* Endereço */}
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                        Endereço
+                                                    </label>
+                                                    <input
+                                                        {...register("endereco")}
+                                                        type="text"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                                        placeholder="Rua, número, bairro"
+                                                    />
+                                                    {errors.endereco && (
+                                                        <p className="text-red-500 text-sm mt-1">
+                                                            {errors.endereco.message}
+                                                        </p>
+                                                    )}
+                                                </div>
 
-                                        {/* Referência */}
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Referência (Opcional)
-                                            </label>
-                                            <textarea
-                                                rows={3}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                                {...register("referencia")}
-                                                placeholder="Referência para entrega"
-                                            />
-                                            {errors.referencia && (
-                                                <p className="text-red-500 text-sm mt-1">
-                                                    {errors.referencia.message}
-                                                </p>
-                                            )}
-                                        </div>
+                                                {/* Referência */}
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                        Referência (Opcional)
+                                                    </label>
+                                                    <textarea
+                                                        rows={3}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                                        {...register("referencia")}
+                                                        placeholder="Referência para entrega"
+                                                    />
+                                                    {errors.referencia && (
+                                                        <p className="text-red-500 text-sm mt-1">
+                                                            {errors.referencia.message}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
 
                                         {/* Quantidade */}
                                         <div>
@@ -407,94 +421,96 @@ export default function Reserva() {
                             </div>
                         )}
                 </div>
-                {isModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" id="recibo" >
-                        <div className="bg-white rounded-lg p-6 shadow-lg max-w-md mx-auto" >
-                            <h2 className="text-2xl font-bold text-center mb-4">
-                                Reserva Realizada com Sucesso! 🎉
-                            </h2>
-                            <div className="border-b pb-4">
-                                <h3 className="text-lg font-semibold mb-2">Dados do Cliente:</h3>
-                                <div className="mb-2">
-                                    <strong>Nome:</strong> {reserva?.nome}
+                {
+                    isModalOpen && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" id="recibo" >
+                            <div className="bg-white rounded-lg p-6 shadow-lg max-w-md mx-auto" >
+                                <h2 className="text-2xl font-bold text-center mb-4">
+                                    Reserva Realizada com Sucesso! 🎉
+                                </h2>
+                                <div className="border-b pb-4">
+                                    <h3 className="text-lg font-semibold mb-2">Dados do Cliente:</h3>
+                                    <div className="mb-2">
+                                        <strong>Nome:</strong> {reserva?.nome}
+                                    </div>
+                                    <div className="mb-2">
+                                        <strong>Email:</strong> {reserva?.email}
+                                    </div>
+                                    <div className="mb-2">
+                                        <strong>Telefone:</strong> {reserva?.telefone}
+                                    </div>
+                                    <div className="mb-2">
+                                        <strong>Endereço:</strong> {reserva?.endereco || "Não informado"}
+                                    </div>
+                                    <div className="mb-2">
+                                        <strong>Referência:</strong> {reserva?.referencia || "Não informado"}
+                                    </div>
+                                    <div className="mb-2">
+                                        <strong>Método de Recebimento:</strong>{" "}
+                                        {reserva?.entrega ? "Entrega" : "Retirada"}
+                                    </div>
                                 </div>
-                                <div className="mb-2">
-                                    <strong>Email:</strong> {reserva?.email}
+                                <div className="mt-4 border-b pb-4">
+                                    <h3 className="text-lg font-semibold mb-2">Dados do Produto:</h3>
+                                    <div>
+                                        <strong>Num. Pedido:</strong> #{reserva?.id}
+                                    </div>
+                                    <div className="mb-2">
+                                        <strong>Produto:</strong> {reserva?.produto?.titulo}
+                                    </div>
+                                    <div className="mb-2">
+                                        <strong>Descrição:</strong> {reserva?.produto?.descricao}
+                                    </div>
+                                    <div className="mb-2">
+                                        <strong>Quantidade:</strong> {reserva?.quantidade}
+                                    </div>
+                                    <div className="mb-2">
+                                        <strong>Preço Unitário:</strong> R$ {reserva?.produto?.precoPromocional! > 0 ? reserva?.produto?.precoPromocional.toFixed(2) : reserva?.produto?.preco.toFixed(2)}
+                                    </div>
+                                    <div className="mb-2">
+                                        <strong>Total:</strong> R$ {reserva?.valorTotal.toFixed(2)}
+                                    </div>
                                 </div>
-                                <div className="mb-2">
-                                    <strong>Telefone:</strong> {reserva?.telefone}
+                                <div className="mt-4 border-b pb-4">
+                                    <h3 className="text-lg font-semibold mb-2">Dados do Vendedor:</h3>
+                                    <div className="mb-1">
+                                        <strong>Instagram:</strong> {produto?.instagram || "Não informado"}
+                                    </div>
+                                    <div className="mb-1">
+                                        <strong>WhatsApp:</strong> {produto?.whats || "Não informado"}
+                                    </div>
                                 </div>
-                                <div className="mb-2">
-                                    <strong>Endereço:</strong> {reserva?.endereco}
+                                <div className="mt-4">
+                                    <h3 className="text-lg font-semibold mb-2">Observações:</h3>
+                                    <p className="text-gray-600">
+                                        Obrigado por comprar conosco! Caso tenha dúvidas, entre em contato pelo WhatsApp ou Instagram.
+                                    </p>
                                 </div>
-                                <div className="mb-2">
-                                    <strong>Referência:</strong> {reserva?.referencia || "Não informado"}
-                                </div>
-                                <div className="mb-2">
-                                    <strong>Método de Recebimento:</strong>{" "}
-                                    {reserva?.entrega ? "Entrega" : "Retirada"}
-                                </div>
-                            </div>
-                            <div className="mt-4 border-b pb-4">
-                                <h3 className="text-lg font-semibold mb-2">Dados do Produto:</h3>
-                                <div>
-                                    <strong>Num. Pedido:</strong> #{reserva?.id}
-                                </div>
-                                <div className="mb-2">
-                                    <strong>Produto:</strong> {reserva?.produto?.titulo}
-                                </div>
-                                <div className="mb-2">
-                                    <strong>Descrição:</strong> {reserva?.produto?.descricao}
-                                </div>
-                                <div className="mb-2">
-                                    <strong>Quantidade:</strong> {reserva?.quantidade}
-                                </div>
-                                <div className="mb-2">
-                                    <strong>Preço Unitário:</strong> R$ {reserva?.produto?.precoPromocional! > 0 ? reserva?.produto?.precoPromocional.toFixed(2) : reserva?.produto?.preco.toFixed(2)}
-                                </div>
-                                <div className="mb-2">
-                                    <strong>Total:</strong> R$ {reserva?.valorTotal.toFixed(2)}
-                                </div>
-                            </div>
-                            <div className="mt-4 border-b pb-4">
-                                <h3 className="text-lg font-semibold mb-2">Dados do Vendedor:</h3>
-                                <div className="mb-1">
-                                    <strong>Instagram:</strong> {produto?.instagram || "Não informado"}
-                                </div>
-                                <div className="mb-1">
-                                    <strong>WhatsApp:</strong> {produto?.whats || "Não informado"}
-                                </div>
-                            </div>
-                            <div className="mt-4">
-                                <h3 className="text-lg font-semibold mb-2">Observações:</h3>
-                                <p className="text-gray-600">
-                                    Obrigado por comprar conosco! Caso tenha dúvidas, entre em contato pelo WhatsApp ou Instagram.
-                                </p>
-                            </div>
 
-                            {!isGeneratingPDF ? (
-                                <div>
-                                    <button
-                                        onClick={generatePDF}
-                                        className="mt-2 px-4 py-2 w-full bg-green-600 text-white rounded-md hover:bg-green-700"
-                                    >
-                                        Baixar Recibo (PDF)
-                                    </button>
-                                    <button
-                                        onClick={closeModal}
-                                        className="mt-6 px-4 py-2 w-full bg-purple-600 text-white rounded-md hover:bg-purple-700"
-                                    >
-                                        Fechar
-                                    </button>
-                                </div>
-                            ) : (
-                                <p className="text-center text-gray-500 mt-4">Gerando recibo, por favor aguarde...</p>
-                            )}
+                                {!isGeneratingPDF ? (
+                                    <div>
+                                        <button
+                                            onClick={generatePDF}
+                                            className="mt-2 px-4 py-2 w-full bg-green-600 text-white rounded-md hover:bg-green-700"
+                                        >
+                                            Baixar Recibo (PDF)
+                                        </button>
+                                        <button
+                                            onClick={closeModal}
+                                            className="mt-6 px-4 py-2 w-full bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                                        >
+                                            Fechar
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <p className="text-center text-gray-500 mt-4">Gerando recibo, por favor aguarde...</p>
+                                )}
 
+                            </div>
                         </div>
-                    </div>
-                )}
-            </div>
-        </div>
+                    )
+                }
+            </div >
+        </div >
     );
 }

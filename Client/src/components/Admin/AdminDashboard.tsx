@@ -175,7 +175,7 @@ export function AdminDashboard() {
                 </button>
               </div>
               {/* cadastrar categoria */}
-              <div className='flex gap-6'> 
+              <div className='flex gap-6'>
                 <div className="mb-6">
                   <button
                     onClick={() => navigate('/admin/banner')}
@@ -332,8 +332,8 @@ export function AdminDashboard() {
                       <p>Email: {reserva.email}</p>
                       <p>Telefone: {reserva.telefone}</p>
                       <p>Instagram: {reserva.instagram}</p>
-                      <p>Endereço: {reserva.endereco}</p>
-                      <p>Referência: {reserva.referencia}</p>
+                      <p>Endereço: {reserva.endereco == "" ? "Não informado" : reserva.endereco}</p>
+                      <p>Referência: {reserva.referencia == "" ? "Não informado" : reserva.referencia}</p>
                       <p>Entrega: {reserva.entrega ? 'Sim' : 'Não'}</p>
                       <p>Retirada: {reserva.retirada ? 'Sim' : 'Não'}</p>
                       <p>Quantidade: {Number(reserva.quantidade)}</p>
