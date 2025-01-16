@@ -49,7 +49,7 @@ namespace BackAppPromo.Application.Service
                     string contentType = type.Split('/')[0] + "/" + typeImg;
                     using (var stream = imagemFile.OpenReadStream())
                     {
-                        string url = await _minioStorage.UploadFileAsync(bucketName, objectName, stream, type);
+                        string url = await _minioStorage.UploadFileAsync(bucketName, objectName, stream, contentType);
                         Imagem imagem = MapImagem(retorno, url);
 
                         var img = await _imagemRepository.AdicionarImagem(imagem);
