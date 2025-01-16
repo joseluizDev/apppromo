@@ -45,7 +45,7 @@ namespace BackAppPromo.Application.Service
                     string bucketName = "apppromo";
                     string type = imagemFile.ContentType;
                     string typeImg = type.Split('/')[1];
-                    string objectName = $"{Guid.NewGuid()}.{typeImg}";
+                    string objectName = $"{Guid.NewGuid()}.webp";
                     using (var stream = imagemFile.OpenReadStream())
                     {
                         string url = await _minioStorage.UploadFileAsync(bucketName, objectName, stream, type);
